@@ -16,5 +16,5 @@ public interface LivroRepository {
 
     boolean existsById(Long id);
 
-    boolean existsByTituloIgnoreCase(String titulo);
+    boolean existsByIsbn(String Isbn);
 }
