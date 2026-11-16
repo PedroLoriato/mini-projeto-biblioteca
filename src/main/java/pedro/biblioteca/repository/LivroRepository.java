@@ -7,7 +7,6 @@ import java.util.Optional;
 
 public interface LivroRepository {
     List<LivroDomain> findAll();
-
     List<LivroDomain> findByAutor(String autor);
     Optional<LivroDomain> findById(Long id);
     LivroDomain save(LivroDomain curso);
