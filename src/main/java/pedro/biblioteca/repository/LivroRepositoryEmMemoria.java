@@ -35,6 +35,16 @@ public class LivroRepositoryEmMemoria implements LivroRepository {
     }
 
     @Override
+    public List<LivroDomain> findByAutor(String autor) {
+        String termoBusca = autor.toLowerCase();
+
+        return dados.values().stream()
+                .filter(livro -> Objects.nonNull(livro.getAutor()) &&
+                        livro.getAutor().toLowerCase().contains(termoBusca))
+                .toList();
+    }
+
+    @Override
     public void deleteById(Long id) {
         dados.remove(id);
     }

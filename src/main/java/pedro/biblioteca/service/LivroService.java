@@ -10,6 +10,7 @@ import pedro.biblioteca.repository.LivroRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +19,12 @@ public class LivroService {
     private final LivroRepository repository;
     private final LivroMapper mapper;
 
-    public List<LivroResponse> listar() {
-        return repository.findAll().stream()
+    public List<LivroResponse> listar(String autor) {
+        return Optional.ofNullable(autor)
+                .filter(Predicate.not(String::isBlank))
+                .map(repository::findByAutor)
+                .orElseGet(repository::findAll)
+                .stream()
                 .map(mapper::toResponse)
                 .toList();
     }
@@ -30,9 +35,7 @@ public class LivroService {
     }
 
     public LivroResponse criar(LivroRequest request) {
-        if (repository.existsByIsbn(request.isbn())) {
-            throw new IllegalStateException("Já existe um livro com esse isbn: " + request.isbn());
-        }
+        verificarIsbnExistente(request.isbn());
 
         LivroDomain livro = mapper.toDomain(request);
         LivroDomain livroSalvo = repository.save(livro);
@@ -41,6 +44,7 @@ public class LivroService {
     }
 
     public Optional<LivroResponse> atualizar(Long id, LivroRequest request) {
+        verificarIsbnExistente(request.isbn());
         return repository.findById(id)
                 .map(livro -> {
                     livro.setTitulo(request.titulo());
@@ -58,5 +62,11 @@ public class LivroService {
         }
         repository.deleteById(id);
         return true;
+    }
+
+    private void verificarIsbnExistente(String isbn) {
+        if (repository.existsByIsbn(isbn)) {
+            throw new IllegalStateException("Já existe um livro com esse isbn: " + isbn);
+        }
     }
 }
