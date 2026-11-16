@@ -1,0 +1,19 @@
+$kind: http-request
+url: http://localhost:8080/livros
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"titulo\": \"Arquitetura Limpa\",\r
+
+    \    \"autor\": \"Pedro Loriato\",\r
+
+    \    \"isbn\": \"123456789012\",\r
+
+    \    \"anoPublicacao\": 2025,\r
+
+    \    \"quantidadeTotal\": 40\r
+
+    }"
+order: 1000
