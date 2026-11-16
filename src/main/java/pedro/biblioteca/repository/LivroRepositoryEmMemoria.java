@@ -55,8 +55,8 @@ public class LivroRepositoryEmMemoria implements LivroRepository {
     }
 
     @Override
-    public boolean existsByIsbn(String Isbn) {
+    public boolean existsByIsbn(String isbn) {
         return dados.values().stream()
-                .anyMatch(livro -> livro.getIsbn().equalsIgnoreCase(Isbn));
+                .anyMatch(livro -> livro.getIsbn().equalsIgnoreCase(isbn));
     }
 }
