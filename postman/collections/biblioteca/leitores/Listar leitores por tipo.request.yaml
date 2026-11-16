@@ -1,0 +1,6 @@
+$kind: http-request
+url: http://localhost:8080/leitores?tipo=ALUNO
+method: GET
+queryParams:
+  tipo: ALUNO
+order: 2465

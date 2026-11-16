@@ -8,16 +8,10 @@ import java.util.Optional;
 
 public interface LeitorRepository {
     List<LeitorDomain> findAll();
-
     List<LeitorDomain> findByTipo(TipoLeitor tipo);
-
     Optional<LeitorDomain> findById(Long id);
-
     LeitorDomain save(LeitorDomain curso);
-
     void deleteById(Long id);
-
     boolean existsById(Long id);
-
     boolean existsByEmail(String email);
 }
