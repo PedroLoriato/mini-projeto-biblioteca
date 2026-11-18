@@ -8,6 +8,7 @@ import pedro.biblioteca.dto.leitor.LeitorRequest;
 import pedro.biblioteca.dto.leitor.LeitorResponse;
 import pedro.biblioteca.exception.ConflitoException;
 import pedro.biblioteca.exception.RecursoNaoEncontradoException;
+import pedro.biblioteca.repository.EmprestimoRepository;
 import pedro.biblioteca.repository.LeitorRepository;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class LeitorService {
 
     private final LeitorRepository repository;
+    private final EmprestimoRepository emprestimoRepository;
 
     public List<LeitorResponse> listar(TipoLeitor tipo) {
         return Optional.ofNullable(tipo)
@@ -30,27 +32,18 @@ public class LeitorService {
     }
 
     public LeitorResponse buscarPorId(Long id) {
-        return repository.findById(id)
-                .map(LeitorResponse::de)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Leitor", id));
+        return LeitorResponse.de(buscarEntidadePorId(id));
     }
 
     public LeitorResponse criar(LeitorRequest request) {
         verificarEmailExistente(request.email());
-
-        LeitorDomain leitor = request.toDomain();
-        LeitorDomain leitorSalvo = repository.save(leitor);
-
+        LeitorDomain leitorSalvo = repository.save(request.toDomain());
         return LeitorResponse.de(leitorSalvo);
     }
 
     public LeitorResponse atualizar(Long id, LeitorRequest request) {
-        LeitorDomain leitor = repository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Leitor", id));
-
-        if (!Objects.equals(leitor.getEmail(), request.email())) {
-            verificarEmailExistente(request.email());
-        }
+        LeitorDomain leitor = buscarEntidadePorId(id);
+        validarAtualizacaoEmail(leitor.getEmail(), request.email());
 
         leitor.setNome(request.nome());
         leitor.setEmail(request.email());
@@ -60,15 +53,31 @@ public class LeitorService {
     }
 
     public void remover(Long id) {
-        if (!repository.existsById(id)) {
-            throw new RecursoNaoEncontradoException("Leitor", id);
-        }
+        buscarEntidadePorId(id);
+        verificarSemEmprestimosAtivos(id);
         repository.deleteById(id);
+    }
+
+    private LeitorDomain buscarEntidadePorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Leitor", id));
+    }
+
+    private void validarAtualizacaoEmail(String emailAtual, String novoEmail) {
+        if (!Objects.equals(emailAtual, novoEmail)) {
+            verificarEmailExistente(novoEmail);
+        }
     }
 
     private void verificarEmailExistente(String email) {
         if (repository.existsByEmail(email)) {
             throw new ConflitoException("Já existe um leitor cadastrado com o e-mail " + email);
+        }
+    }
+
+    private void verificarSemEmprestimosAtivos(Long leitorId) {
+        if (emprestimoRepository.countAtivosByLeitorId(leitorId) > 0) {
+            throw new ConflitoException("Não é possível remover o leitor " + leitorId + " pois possui empréstimos ativos.");
         }
     }
 }

@@ -12,6 +12,8 @@ public interface LeitorRepository {
     Optional<LeitorDomain> findById(Long id);
     LeitorDomain save(LeitorDomain curso);
     void deleteById(Long id);
-    boolean existsById(Long id);
-    boolean existsByEmail(String email);
+
+    Boolean existsById(Long id);
+
+    Boolean existsByEmail(String email);
 }

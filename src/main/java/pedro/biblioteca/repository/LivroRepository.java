@@ -11,6 +11,8 @@ public interface LivroRepository {
     Optional<LivroDomain> findById(Long id);
     LivroDomain save(LivroDomain curso);
     void deleteById(Long id);
-    boolean existsById(Long id);
-    boolean existsByIsbn(String isbn);
+
+    Boolean existsById(Long id);
+
+    Boolean existsByIsbn(String isbn);
 }

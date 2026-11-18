@@ -9,7 +9,7 @@ body:
     {
       "titulo": "Arquitetura Limpa",
       "autor": "Pedro Loriato",
-      "isbn": "123456789012",
+      "isbn": "1234567890123",
       "anoPublicacao": 2025,
       "quantidadeTotal": 40
     }

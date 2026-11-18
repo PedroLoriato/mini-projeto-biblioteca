@@ -1,0 +1,5 @@
+$kind: http-request
+name: Buscar empréstimo por id
+url: http://localhost:8080/emprestimos/1
+method: GET
+order: 5000
