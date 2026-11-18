@@ -1,15 +1,23 @@
 {
   "info": {
-    "_postman_id": "d734ACB35a81fe629d333CBb",
     "name": "biblioteca",
+    "_postman_id": "biblioteca-collection-v1",
+    "description": "Collection completa da API de Biblioteca com cenários de sucesso e erro (400, 404, 409, 422).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
   "item": [
     {
-      "name": "livros",
+      "name": "Livros",
       "item": [
         {
-          "name": "Criar livro",
+          "name": "Criar livro - 201 Created",
           "request": {
             "method": "POST",
             "header": [
@@ -18,91 +26,347 @@
                 "value": "application/json"
               }
             ],
+            "url": {
+              "raw": "{{base_url}}/livros",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Arquitetura Limpa\",\n  \"autor\": \"Pedro Loriato\",\n  \"isbn\": \"123456789012\",\n  \"anoPublicacao\": 2025,\n  \"quantidadeTotal\": 40\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
+              },
+              "raw": "{\n  \"titulo\": \"O Programador Pragmático\",\n  \"autor\": \"Andrew Hunt\",\n  \"isbn\": \"9780201616224\",\n  \"anoPublicacao\": 1999,\n  \"quantidadeTotal\": 3\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 4,\n  \"titulo\": \"O Programador Pragmático\",\n  \"autor\": \"Andrew Hunt\",\n  \"isbn\": \"9780201616224\",\n  \"anoPublicacao\": 1999,\n  \"quantidadeTotal\": 3,\n  \"quantidadeDisponivel\": 3\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar livro - 400 Campos inválidos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
               }
+            ],
+            "url": {
+              "raw": "{{base_url}}/livros",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros"
+              ]
             },
-            "url": {
-              "raw": "http://localhost:8080/livros",
-              "protocol": "http",
-              "host": [
-                "localhost"
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"titulo\": \"\",\n  \"autor\": \"\",\n  \"isbn\": \"123\",\n  \"anoPublicacao\": null,\n  \"quantidadeTotal\": -1\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Validação",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
               ],
-              "port": "8080",
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/validacao\",\n  \"title\": \"Erro de validação\",\n  \"status\": 400,\n  \"detail\": \"Um ou mais campos estão inválidos\",\n  \"erros\": {\n    \"titulo\": \"O título é obrigatório\",\n    \"autor\": \"O autor é obrigatório\",\n    \"isbn\": \"O ISBN deve conter exatamente 13 dígitos numéricos\",\n    \"anoPublicacao\": \"O ano de publicação é obrigatório\",\n    \"quantidadeTotal\": \"A quantidade total deve ser maior que zero\"\n  }\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar livro - 409 ISBN duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/livros",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"titulo\": \"Código Limpo\",\n  \"autor\": \"Robert C. Martin\",\n  \"isbn\": \"9788576082675\",\n  \"anoPublicacao\": 2009,\n  \"quantidadeTotal\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - ISBN já cadastrado",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"Já existe um livro cadastrado com o ISBN 9788576082675.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar livro - 422 Ano futuro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/livros",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"titulo\": \"Livro do Futuro\",\n  \"autor\": \"Autor Futuro\",\n  \"isbn\": \"9781234567890\",\n  \"anoPublicacao\": 2099,\n  \"quantidadeTotal\": 1\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "422 Unprocessable Entity - Ano futuro",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/regra-negocio\",\n  \"title\": \"Regra de negócio violada\",\n  \"status\": 422,\n  \"detail\": \"O ano de publicação (2099) não pode ser maior que o ano atual.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Listar livros - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/livros",
+              "host": [
+                "{{base_url}}"
+              ],
               "path": [
                 "livros"
               ]
             }
-          }
-        },
-        {
-          "name": "Listar livros",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/livros",
-              "protocol": "http",
-              "host": [
-                "localhost"
+          },
+          "response": [
+            {
+              "name": "200 OK - Lista de livros",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
               ],
-              "port": "8080",
-              "path": [
-                "livros"
-              ]
+              "body": "[\n  {\n    \"id\": 1,\n    \"titulo\": \"Código Limpo\",\n    \"autor\": \"Robert C. Martin\",\n    \"isbn\": \"9788576082675\",\n    \"anoPublicacao\": 2009,\n    \"quantidadeTotal\": 2,\n    \"quantidadeDisponivel\": 1\n  },\n  {\n    \"id\": 2,\n    \"titulo\": \"Arquitetura Limpa\",\n    \"autor\": \"Robert C. Martin\",\n    \"isbn\": \"9788550804606\",\n    \"anoPublicacao\": 2019,\n    \"quantidadeTotal\": 1,\n    \"quantidadeDisponivel\": 1\n  },\n  {\n    \"id\": 3,\n    \"titulo\": \"Domain-Driven Design\",\n    \"autor\": \"Eric Evans\",\n    \"isbn\": \"9788550800653\",\n    \"anoPublicacao\": 2016,\n    \"quantidadeTotal\": 3,\n    \"quantidadeDisponivel\": 3\n  }\n]",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
-          "name": "Buscar livro por id",
+          "name": "Listar livros por autor - 200 OK",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/livros/1",
-              "protocol": "http",
+              "raw": "{{base_url}}/livros?autor=Robert C. Martin",
               "host": [
-                "localhost"
+                "{{base_url}}"
               ],
-              "port": "8080",
-              "path": [
-                "livros",
-                "1"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Listar livros por autor",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/livros?autor=peewdw",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
               "path": [
                 "livros"
               ],
               "query": [
                 {
                   "key": "autor",
-                  "value": "peewdw"
+                  "value": "Robert C. Martin"
                 }
               ]
             }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK - Filtrado por autor",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"titulo\": \"Código Limpo\",\n    \"autor\": \"Robert C. Martin\",\n    \"isbn\": \"9788576082675\",\n    \"anoPublicacao\": 2009,\n    \"quantidadeTotal\": 2,\n    \"quantidadeDisponivel\": 1\n  },\n  {\n    \"id\": 2,\n    \"titulo\": \"Arquitetura Limpa\",\n    \"autor\": \"Robert C. Martin\",\n    \"isbn\": \"9788550804606\",\n    \"anoPublicacao\": 2019,\n    \"quantidadeTotal\": 1,\n    \"quantidadeDisponivel\": 1\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         },
         {
-          "name": "Atualizar livro",
+          "name": "Listar livros disponíveis - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/livros?disponivel=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros"
+              ],
+              "query": [
+                {
+                  "key": "disponivel",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Apenas disponíveis",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 2,\n    \"titulo\": \"Arquitetura Limpa\",\n    \"autor\": \"Robert C. Martin\",\n    \"isbn\": \"9788550804606\",\n    \"anoPublicacao\": 2019,\n    \"quantidadeTotal\": 1,\n    \"quantidadeDisponivel\": 1\n  },\n  {\n    \"id\": 3,\n    \"titulo\": \"Domain-Driven Design\",\n    \"autor\": \"Eric Evans\",\n    \"isbn\": \"9788550800653\",\n    \"anoPublicacao\": 2016,\n    \"quantidadeTotal\": 3,\n    \"quantidadeDisponivel\": 3\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Buscar livro por ID - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/livros/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"titulo\": \"Código Limpo\",\n  \"autor\": \"Robert C. Martin\",\n  \"isbn\": \"9788576082675\",\n  \"anoPublicacao\": 2009,\n  \"quantidadeTotal\": 2,\n  \"quantidadeDisponivel\": 1\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Buscar livro por ID - 404 Não encontrado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/livros/999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros",
+                "999"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Livro com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Atualizar livro - 200 OK",
           "request": {
             "method": "PUT",
             "header": [
@@ -111,55 +375,324 @@
                 "value": "application/json"
               }
             ],
+            "url": {
+              "raw": "{{base_url}}/livros/3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros",
+                "3"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Clean Code\",\n  \"autor\": \"Pedro Loriato\",\n  \"isbn\": \"123456789012\",\n  \"anoPublicacao\": 2025,\n  \"quantidadeTotal\": 60\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/livros/1",
-              "protocol": "http",
-              "host": [
-                "localhost"
+              },
+              "raw": "{\n  \"titulo\": \"Domain-Driven Design\",\n  \"autor\": \"Eric Evans\",\n  \"isbn\": \"9788550800653\",\n  \"anoPublicacao\": 2016,\n  \"quantidadeTotal\": 5\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
               ],
-              "port": "8080",
+              "body": "{\n  \"id\": 3,\n  \"titulo\": \"Domain-Driven Design\",\n  \"autor\": \"Eric Evans\",\n  \"isbn\": \"9788550800653\",\n  \"anoPublicacao\": 2016,\n  \"quantidadeTotal\": 5,\n  \"quantidadeDisponivel\": 5\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Atualizar livro - 400 Campos inválidos",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/livros/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"titulo\": \"\",\n  \"autor\": \"Robert C. Martin\",\n  \"isbn\": \"ISBN-INVALIDO\",\n  \"anoPublicacao\": 2009,\n  \"quantidadeTotal\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Validação",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/validacao\",\n  \"title\": \"Erro de validação\",\n  \"status\": 400,\n  \"detail\": \"Um ou mais campos estão inválidos\",\n  \"erros\": {\n    \"titulo\": \"O título é obrigatório\",\n    \"isbn\": \"O ISBN deve conter exatamente 13 dígitos numéricos\"\n  }\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Atualizar livro - 404 Não encontrado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/livros/999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros",
+                "999"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"titulo\": \"Livro Inexistente\",\n  \"autor\": \"Autor\",\n  \"isbn\": \"9781111111111\",\n  \"anoPublicacao\": 2020,\n  \"quantidadeTotal\": 1\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Livro com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Atualizar livro - 409 ISBN de outro livro",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/livros/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"titulo\": \"Código Limpo\",\n  \"autor\": \"Robert C. Martin\",\n  \"isbn\": \"9788550804606\",\n  \"anoPublicacao\": 2009,\n  \"quantidadeTotal\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - ISBN pertence a outro livro",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"Já existe um livro cadastrado com o ISBN 9788550804606.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Atualizar livro - 422 Ano futuro",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/livros/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"titulo\": \"Código Limpo\",\n  \"autor\": \"Robert C. Martin\",\n  \"isbn\": \"9788576082675\",\n  \"anoPublicacao\": 2099,\n  \"quantidadeTotal\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "422 Unprocessable Entity - Ano futuro",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/regra-negocio\",\n  \"title\": \"Regra de negócio violada\",\n  \"status\": 422,\n  \"detail\": \"O ano de publicação (2099) não pode ser maior que o ano atual.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Remover livro - 204 No Content",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/livros/3",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros",
+                "3"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": "",
+              "_postman_previewlanguage": "text"
+            }
+          ]
+        },
+        {
+          "name": "Remover livro - 404 Não encontrado",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/livros/999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livros",
+                "999"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Livro com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Remover livro - 409 Com empréstimos ativos",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/livros/1",
+              "host": [
+                "{{base_url}}"
+              ],
               "path": [
                 "livros",
                 "1"
               ]
             }
-          }
-        },
-        {
-          "name": "Remover livro",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/livros/2",
-              "protocol": "http",
-              "host": [
-                "localhost"
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Livro com empréstimos ativos",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
               ],
-              "port": "8080",
-              "path": [
-                "livros",
-                "2"
-              ]
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"Não é possível remover o livro 1 pois possui empréstimos ativos.\"\n}",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         }
       ]
     },
     {
-      "name": "leitores",
+      "name": "Leitores",
       "item": [
         {
-          "name": "Criar leitor",
+          "name": "Criar leitor - 201 Created",
           "request": {
             "method": "POST",
             "header": [
@@ -168,91 +701,310 @@
                 "value": "application/json"
               }
             ],
+            "url": {
+              "raw": "{{base_url}}/leitores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"Pedrin\",\n  \"email\": \"pedroloriato@gmail.com\",\n  \"tipo\": \"PROFESSOR\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
+              },
+              "raw": "{\n  \"nome\": \"João Silva\",\n  \"email\": \"joao.silva@ifes.edu.br\",\n  \"tipo\": \"ALUNO\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 3,\n  \"nome\": \"João Silva\",\n  \"email\": \"joao.silva@ifes.edu.br\",\n  \"tipo\": \"ALUNO\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar leitor - 400 Campos inválidos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
               }
+            ],
+            "url": {
+              "raw": "{{base_url}}/leitores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores"
+              ]
             },
-            "url": {
-              "raw": "http://localhost:8080/leitores",
-              "protocol": "http",
-              "host": [
-                "localhost"
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"nome\": \"\",\n  \"email\": \"email-invalido\",\n  \"tipo\": null\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Validação",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
               ],
-              "port": "8080",
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/validacao\",\n  \"title\": \"Erro de validação\",\n  \"status\": 400,\n  \"detail\": \"Um ou mais campos estão inválidos\",\n  \"erros\": {\n    \"nome\": \"O nome é obrigatório\",\n    \"email\": \"O e-mail deve ter um formato válido\",\n    \"tipo\": \"O tipo de leitor é obrigatório (ALUNO ou PROFESSOR)\"\n  }\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar leitor - 400 Tipo inválido (JSON malformado)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/leitores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"nome\": \"João Silva\",\n  \"email\": \"joao.silva@ifes.edu.br\",\n  \"tipo\": \"INVALIDO\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Tipo inválido",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/requisicao-malformada\",\n  \"title\": \"Requisição malformada\",\n  \"status\": 400,\n  \"detail\": \"Corpo da requisição inválido ou valor não permitido (ex.: tipo de leitor deve ser ALUNO ou PROFESSOR).\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar leitor - 409 E-mail duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/leitores",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"nome\": \"Ana Souza\",\n  \"email\": \"ana.souza@ifes.edu.br\",\n  \"tipo\": \"ALUNO\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - E-mail já cadastrado",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"Já existe um leitor cadastrado com o e-mail ana.souza@ifes.edu.br\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Listar leitores - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/leitores",
+              "host": [
+                "{{base_url}}"
+              ],
               "path": [
                 "leitores"
               ]
             }
-          }
-        },
-        {
-          "name": "Listar leitores",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/leitores",
-              "protocol": "http",
-              "host": [
-                "localhost"
+          },
+          "response": [
+            {
+              "name": "200 OK - Lista de leitores",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
               ],
-              "port": "8080",
-              "path": [
-                "leitores"
-              ]
+              "body": "[\n  {\n    \"id\": 1,\n    \"nome\": \"Ana Souza\",\n    \"email\": \"ana.souza@ifes.edu.br\",\n    \"tipo\": \"ALUNO\"\n  },\n  {\n    \"id\": 2,\n    \"nome\": \"Carlos Mendes\",\n    \"email\": \"carlos.mendes@ifes.edu.br\",\n    \"tipo\": \"PROFESSOR\"\n  }\n]",
+              "_postman_previewlanguage": "json"
             }
-          }
+          ]
         },
         {
-          "name": "Buscar leitor por id",
+          "name": "Listar leitores por tipo - 200 OK",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/leitores/1",
-              "protocol": "http",
+              "raw": "{{base_url}}/leitores?tipo=PROFESSOR",
               "host": [
-                "localhost"
+                "{{base_url}}"
               ],
-              "port": "8080",
-              "path": [
-                "leitores",
-                "1"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Listar leitores por tipo",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/leitores?tipo=ALUNO",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
               "path": [
                 "leitores"
               ],
               "query": [
                 {
                   "key": "tipo",
-                  "value": "ALUNO"
+                  "value": "PROFESSOR"
                 }
               ]
             }
-          }
+          },
+          "response": [
+            {
+              "name": "200 OK - Filtrado por tipo PROFESSOR",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 2,\n    \"nome\": \"Carlos Mendes\",\n    \"email\": \"carlos.mendes@ifes.edu.br\",\n    \"tipo\": \"PROFESSOR\"\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         },
         {
-          "name": "Atualizar leitor",
+          "name": "Buscar leitor por ID - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/leitores/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"nome\": \"Ana Souza\",\n  \"email\": \"ana.souza@ifes.edu.br\",\n  \"tipo\": \"ALUNO\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Buscar leitor por ID - 404 Não encontrado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/leitores/999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores",
+                "999"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Leitor com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Atualizar leitor - 200 OK",
           "request": {
             "method": "PUT",
             "header": [
@@ -261,47 +1013,890 @@
                 "value": "application/json"
               }
             ],
+            "url": {
+              "raw": "{{base_url}}/leitores/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores",
+                "2"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"Pedrooo\",\n  \"email\": \"pedroloriato@gmail.com\",\n  \"tipo\": \"ALUNO\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/leitores/2",
-              "protocol": "http",
-              "host": [
-                "localhost"
+              },
+              "raw": "{\n  \"nome\": \"Carlos Mendes\",\n  \"email\": \"carlos.mendes@ifes.edu.br\",\n  \"tipo\": \"PROFESSOR\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
               ],
-              "port": "8080",
+              "body": "{\n  \"id\": 2,\n  \"nome\": \"Carlos Mendes\",\n  \"email\": \"carlos.mendes@ifes.edu.br\",\n  \"tipo\": \"PROFESSOR\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Atualizar leitor - 400 Campos inválidos",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/leitores/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"nome\": \"\",\n  \"email\": \"nao-e-email\",\n  \"tipo\": \"ALUNO\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Validação",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/validacao\",\n  \"title\": \"Erro de validação\",\n  \"status\": 400,\n  \"detail\": \"Um ou mais campos estão inválidos\",\n  \"erros\": {\n    \"nome\": \"O nome é obrigatório\",\n    \"email\": \"O e-mail deve ter um formato válido\"\n  }\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Atualizar leitor - 404 Não encontrado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/leitores/999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores",
+                "999"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"nome\": \"Leitor Inexistente\",\n  \"email\": \"inexistente@ifes.edu.br\",\n  \"tipo\": \"ALUNO\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Leitor com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Atualizar leitor - 409 E-mail de outro leitor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/leitores/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "leitores",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"nome\": \"Ana Souza\",\n  \"email\": \"carlos.mendes@ifes.edu.br\",\n  \"tipo\": \"ALUNO\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - E-mail pertence a outro leitor",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"Já existe um leitor cadastrado com o e-mail carlos.mendes@ifes.edu.br\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Remover leitor - 204 No Content",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/leitores/2",
+              "host": [
+                "{{base_url}}"
+              ],
               "path": [
                 "leitores",
                 "2"
               ]
             }
-          }
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": "",
+              "_postman_previewlanguage": "text"
+            }
+          ]
         },
         {
-          "name": "Remover leitor",
+          "name": "Remover leitor - 404 Não encontrado",
           "request": {
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/leitores/1",
-              "protocol": "http",
+              "raw": "{{base_url}}/leitores/999",
               "host": [
-                "localhost"
+                "{{base_url}}"
               ],
-              "port": "8080",
+              "path": [
+                "leitores",
+                "999"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Leitor com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Remover leitor - 409 Com empréstimos ativos",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/leitores/1",
+              "host": [
+                "{{base_url}}"
+              ],
               "path": [
                 "leitores",
                 "1"
               ]
             }
-          }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Leitor com empréstimos ativos",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"Não é possível remover o leitor 1 pois possui empréstimos ativos.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Empréstimos",
+      "item": [
+        {
+          "name": "Criar empréstimo - 201 Created",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"livroId\": 2,\n  \"leitorId\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 2,\n  \"livroId\": 2,\n  \"titulo\": \"Arquitetura Limpa\",\n  \"leitorId\": 2,\n  \"leitor\": \"Carlos Mendes\",\n  \"dataEmprestimo\": \"2026-11-18\",\n  \"dataPrevistaDevolucao\": \"2026-12-02\",\n  \"dataDevolucao\": null,\n  \"multa\": 0.00\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar empréstimo - 400 Campos inválidos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"livroId\": null,\n  \"leitorId\": null\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad Request - Validação",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/validacao\",\n  \"title\": \"Erro de validação\",\n  \"status\": 400,\n  \"detail\": \"Um ou mais campos estão inválidos\",\n  \"erros\": {\n    \"livroId\": \"O ID do livro é obrigatório\",\n    \"leitorId\": \"O ID do leitor é obrigatório\"\n  }\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar empréstimo - 404 Livro não encontrado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"livroId\": 999,\n  \"leitorId\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found - Livro inexistente",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Livro com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar empréstimo - 404 Leitor não encontrado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"livroId\": 2,\n  \"leitorId\": 999\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found - Leitor inexistente",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Leitor com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar empréstimo - 409 Sem exemplares disponíveis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"livroId\": 2,\n  \"leitorId\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Sem exemplares disponíveis",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"Não há exemplares disponíveis para o livro 'Arquitetura Limpa'.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar empréstimo - 409 Leitor com empréstimo em atraso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"livroId\": 3,\n  \"leitorId\": 1\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Leitor com empréstimo em atraso",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"O leitor possui empréstimo em atraso e não pode realizar novo empréstimo.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Criar empréstimo - 409 Limite de empréstimos atingido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"livroId\": 3,\n  \"leitorId\": 2\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Limite de empréstimos atingido",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"O leitor atingiu o limite máximo de 5 empréstimos ativos.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Listar empréstimos - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/emprestimos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Lista de empréstimos",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"livroId\": 1,\n    \"titulo\": \"Código Limpo\",\n    \"leitorId\": 1,\n    \"leitor\": \"Ana Souza\",\n    \"dataEmprestimo\": \"2026-11-08\",\n    \"dataPrevistaDevolucao\": \"2026-11-15\",\n    \"dataDevolucao\": null,\n    \"multa\": 0.00\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Listar empréstimos por leitor - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/emprestimos?leitorId=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ],
+              "query": [
+                {
+                  "key": "leitorId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Filtrado por leitor",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"livroId\": 1,\n    \"titulo\": \"Código Limpo\",\n    \"leitorId\": 1,\n    \"leitor\": \"Ana Souza\",\n    \"dataEmprestimo\": \"2026-11-08\",\n    \"dataPrevistaDevolucao\": \"2026-11-15\",\n    \"dataDevolucao\": null,\n    \"multa\": 0.00\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Listar empréstimos ativos - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/emprestimos?ativos=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos"
+              ],
+              "query": [
+                {
+                  "key": "ativos",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Apenas ativos",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"livroId\": 1,\n    \"titulo\": \"Código Limpo\",\n    \"leitorId\": 1,\n    \"leitor\": \"Ana Souza\",\n    \"dataEmprestimo\": \"2026-11-08\",\n    \"dataPrevistaDevolucao\": \"2026-11-15\",\n    \"dataDevolucao\": null,\n    \"multa\": 0.00\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Buscar empréstimo por ID - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/emprestimos/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"livroId\": 1,\n  \"titulo\": \"Código Limpo\",\n  \"leitorId\": 1,\n  \"leitor\": \"Ana Souza\",\n  \"dataEmprestimo\": \"2026-11-08\",\n  \"dataPrevistaDevolucao\": \"2026-11-15\",\n  \"dataDevolucao\": null,\n  \"multa\": 0.00\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Buscar empréstimo por ID - 404 Não encontrado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/emprestimos/999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos",
+                "999"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Empréstimo com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Registrar devolução - 200 OK",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/emprestimos/1/devolucao",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos",
+                "1",
+                "devolucao"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Devolução sem multa",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"livroId\": 1,\n  \"titulo\": \"Código Limpo\",\n  \"leitorId\": 1,\n  \"leitor\": \"Ana Souza\",\n  \"dataEmprestimo\": \"2026-11-08\",\n  \"dataPrevistaDevolucao\": \"2026-11-15\",\n  \"dataDevolucao\": \"2026-11-18\",\n  \"multa\": 3.00\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Registrar devolução - 404 Empréstimo não encontrado",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/emprestimos/999/devolucao",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos",
+                "999",
+                "devolucao"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/recurso-nao-encontrado\",\n  \"title\": \"Recurso não encontrado\",\n  \"status\": 404,\n  \"detail\": \"Empréstimo com id 999 não encontrado.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Registrar devolução - 409 Já devolvido",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/emprestimos/1/devolucao",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos",
+                "1",
+                "devolucao"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "409 Conflict - Empréstimo já devolvido",
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"http://localhost:8080/erros/conflito\",\n  \"title\": \"Conflito de dados\",\n  \"status\": 409,\n  \"detail\": \"O empréstimo 1 já foi devolvido.\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Listar empréstimos atrasados - 200 OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/emprestimos/atrasados",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "emprestimos",
+                "atrasados"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Lista de atrasados",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"livroId\": 1,\n    \"titulo\": \"Código Limpo\",\n    \"leitorId\": 1,\n    \"leitor\": \"Ana Souza\",\n    \"dataEmprestimo\": \"2026-11-08\",\n    \"dataPrevistaDevolucao\": \"2026-11-15\",\n    \"dataDevolucao\": null,\n    \"multa\": 0.00\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         }
       ]
     }

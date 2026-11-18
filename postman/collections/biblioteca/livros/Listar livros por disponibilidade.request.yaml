@@ -1,6 +1,0 @@
-$kind: http-request
-url: http://localhost:8080/livros?disponivel=true
-method: GET
-queryParams:
-  disponivel: "true"
-order: 4740
