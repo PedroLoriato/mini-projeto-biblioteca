@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class EmprestimoRepositoryEmMemoria implements EmprestimoRepository {
 
     private final Map<Long, EmprestimoDomain> dados = new ConcurrentHashMap<>();
-    private final AtomicLong sequencia = new AtomicLong(1);
+    private final AtomicLong sequencia = new AtomicLong();
 
     @Override
     public EmprestimoDomain save(EmprestimoDomain emprestimo) {
