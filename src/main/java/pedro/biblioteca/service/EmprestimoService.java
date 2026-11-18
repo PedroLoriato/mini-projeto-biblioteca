@@ -121,7 +121,7 @@ public class EmprestimoService {
         LocalDate hoje = LocalDate.now(clock);
         PoliticaEmprestimo politica = politicas.get(leitor.getTipo());
 
-        long diasAtraso = Math.max(0, ChronoUnit.DAYS.between(emprestimo.getDataPrevistaDevolucao(), hoje));
+        Long diasAtraso = Math.max(0, ChronoUnit.DAYS.between(emprestimo.getDataPrevistaDevolucao(), hoje));
         emprestimo.setDataDevolucao(hoje);
         emprestimo.setMulta(politica.calcularMulta(diasAtraso));
 
