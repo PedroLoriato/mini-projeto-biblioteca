@@ -6,10 +6,13 @@ import pedro.biblioteca.domain.LivroDomain;
 import pedro.biblioteca.dto.livro.LivroRequest;
 import pedro.biblioteca.dto.livro.LivroResponse;
 import pedro.biblioteca.exception.ConflitoException;
+import pedro.biblioteca.exception.NegocioException;
 import pedro.biblioteca.exception.RecursoNaoEncontradoException;
 import pedro.biblioteca.repository.EmprestimoRepository;
 import pedro.biblioteca.repository.LivroRepository;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,6 +25,7 @@ public class LivroService {
 
     private final LivroRepository repository;
     private final EmprestimoRepository emprestimoRepository;
+    private final Clock clock;
 
     public List<LivroResponse> listar(String autor, Boolean disponivel) {
         Map<Long, Long> ativosPorLivro = emprestimoRepository.countAtivosPorLivro();
@@ -32,11 +36,7 @@ public class LivroService {
                 .map(repository::findByAutor)
                 .orElseGet(repository::findAll)
                 .stream()
-                .map(livro -> LivroResponse.de(
-                                livro,
-                                calcularQuantidadeDisponivel(livro, ativosPorLivro)
-                        )
-                )
+                .map(livro -> LivroResponse.de(livro, calcularQuantidadeDisponivel(livro, ativosPorLivro)))
                 .filter(porDisponibilidade(disponivel))
                 .toList();
     }
@@ -46,12 +46,16 @@ public class LivroService {
     }
 
     public LivroResponse criar(LivroRequest request) {
+        validarAnoPublicacao(request.anoPublicacao());
         verificarIsbnExistente(request.isbn());
+
         LivroDomain livroSalvo = repository.save(request.toDomain());
         return LivroResponse.de(livroSalvo, livroSalvo.getQuantidadeTotal());
     }
 
     public LivroResponse atualizar(Long id, LivroRequest request) {
+        validarAnoPublicacao(request.anoPublicacao());
+
         LivroDomain livro = buscarEntidadePorId(id);
         validarAtualizacaoIsbn(livro.getIsbn(), request.isbn());
 
@@ -93,6 +97,15 @@ public class LivroService {
         return livro -> (livro.quantidadeDisponivel() > 0) == disponivel;
     }
 
+    private void validarAnoPublicacao(Integer anoPublicacao) {
+        int anoAtual = LocalDate.now(clock).getYear();
+        if (anoPublicacao > anoAtual) {
+            throw new NegocioException(
+                    "O ano de publicação (" + anoPublicacao + ") não pode ser maior que o ano atual (" + anoAtual + ")."
+            );
+        }
+    }
+
     private void validarAtualizacaoIsbn(String isbnAtual, String novoIsbn) {
         if (!Objects.equals(isbnAtual, novoIsbn)) {
             verificarIsbnExistente(novoIsbn);
@@ -108,9 +121,7 @@ public class LivroService {
     private void verificarSemEmprestimosAtivos(Long livroId) {
         if (emprestimoRepository.countAtivosByLivroId(livroId) > 0) {
             throw new ConflitoException(
-                    "Não é possível remover o livro " +
-                            livroId +
-                            " pois possui empréstimos ativos."
+                    "Não é possível remover o livro " + livroId + " pois possui empréstimos ativos."
             );
         }
     }
