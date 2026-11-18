@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:8080/emprestimos
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"livroId\": 1, \r
+
+    \    \"leitorId\": 1\r
+
+    }"
+order: 1000

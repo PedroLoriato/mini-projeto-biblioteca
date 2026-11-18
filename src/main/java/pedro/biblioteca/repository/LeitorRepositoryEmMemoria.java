@@ -51,12 +51,12 @@ public class LeitorRepositoryEmMemoria implements LeitorRepository {
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public Boolean existsById(Long id) {
         return dados.containsKey(id);
     }
 
     @Override
-    public boolean existsByEmail(String email) {
+    public Boolean existsByEmail(String email) {
         return dados.values().stream()
                 .anyMatch(leitor -> leitor.getEmail().equalsIgnoreCase(email));
     }

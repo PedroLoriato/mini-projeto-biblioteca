@@ -31,8 +31,11 @@ public class LivroController {
     }
 
     @GetMapping
-    public List<LivroResponse> listar(@RequestParam(value = "autor", required = false) String autor) {
-        return service.listar(autor);
+    public List<LivroResponse> listar(
+            @RequestParam(value = "autor", required = false) String autor,
+            @RequestParam(value = "disponivel", required = false) Boolean disponivel
+    ) {
+        return service.listar(autor, disponivel);
     }
 
     @GetMapping("/{id}")

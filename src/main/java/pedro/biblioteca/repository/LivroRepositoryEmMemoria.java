@@ -50,12 +50,12 @@ public class LivroRepositoryEmMemoria implements LivroRepository {
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public Boolean existsById(Long id) {
         return dados.containsKey(id);
     }
 
     @Override
-    public boolean existsByIsbn(String isbn) {
+    public Boolean existsByIsbn(String isbn) {
         return dados.values().stream()
                 .anyMatch(livro -> livro.getIsbn().equalsIgnoreCase(isbn));
     }
