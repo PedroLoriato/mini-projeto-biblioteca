@@ -1,0 +1,309 @@
+{
+  "info": {
+    "_postman_id": "d734ACB35a81fe629d333CBb",
+    "name": "biblioteca",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "livros",
+      "item": [
+        {
+          "name": "Criar livro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Arquitetura Limpa\",\n  \"autor\": \"Pedro Loriato\",\n  \"isbn\": \"123456789012\",\n  \"anoPublicacao\": 2025,\n  \"quantidadeTotal\": 40\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/livros",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "livros"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar livros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/livros",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "livros"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar livro por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/livros/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "livros",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar livros por autor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/livros?autor=peewdw",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "livros"
+              ],
+              "query": [
+                {
+                  "key": "autor",
+                  "value": "peewdw"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Atualizar livro",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Clean Code\",\n  \"autor\": \"Pedro Loriato\",\n  \"isbn\": \"123456789012\",\n  \"anoPublicacao\": 2025,\n  \"quantidadeTotal\": 60\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/livros/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "livros",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remover livro",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/livros/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "livros",
+                "2"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "leitores",
+      "item": [
+        {
+          "name": "Criar leitor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Pedrin\",\n  \"email\": \"pedroloriato@gmail.com\",\n  \"tipo\": \"PROFESSOR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/leitores",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "leitores"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar leitores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/leitores",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "leitores"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar leitor por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/leitores/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "leitores",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar leitores por tipo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/leitores?tipo=ALUNO",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "leitores"
+              ],
+              "query": [
+                {
+                  "key": "tipo",
+                  "value": "ALUNO"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Atualizar leitor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Pedrooo\",\n  \"email\": \"pedroloriato@gmail.com\",\n  \"tipo\": \"ALUNO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/leitores/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "leitores",
+                "2"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remover leitor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/leitores/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "leitores",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+$kind: http-request
+url: http://localhost:8080/livros/1
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "titulo": "Clean Code",
+      "autor": "Pedro Loriato",
+      "isbn": "123456789012",
+      "anoPublicacao": 2025,
+      "quantidadeTotal": 60
+    }
+order: 5000
