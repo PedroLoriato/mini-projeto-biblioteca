@@ -1,6 +1,0 @@
-$kind: http-request
-url: http://localhost:8080/livros?autor=peewdw
-method: GET
-queryParams:
-  autor: peewdw
-order: 4000
