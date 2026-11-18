@@ -1,6 +1,0 @@
-$kind: http-request
-url: http://localhost:8080/emprestimos?ativos=true
-method: GET
-queryParams:
-  ativos: "true"
-order: 4000
