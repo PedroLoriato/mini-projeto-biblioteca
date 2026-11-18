@@ -1,4 +1,4 @@
 $kind: http-request
-url: ""
+url: http://localhost:8080/emprestimos
 method: GET
 order: 3000

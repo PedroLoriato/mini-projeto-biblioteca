@@ -8,16 +8,18 @@ public record LivroResponse(
         String autor,
         String isbn,
         Integer anoPublicacao,
-        Integer quantidadeTotal
+        Integer quantidadeTotal,
+        Integer quantidadeDisponivel
 ) {
-    public static LivroResponse de(LivroDomain livro) {
+    public static LivroResponse de(LivroDomain livro, int quantidadeDisponivel) {
         return new LivroResponse(
                 livro.getId(),
                 livro.getTitulo(),
                 livro.getAutor(),
                 livro.getIsbn(),
                 livro.getAnoPublicacao(),
-                livro.getQuantidadeTotal()
+                livro.getQuantidadeTotal(),
+                quantidadeDisponivel
         );
     }
 }

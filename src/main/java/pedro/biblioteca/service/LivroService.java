@@ -24,25 +24,27 @@ public class LivroService {
     private final EmprestimoRepository emprestimoRepository;
 
     public List<LivroResponse> listar(String autor, Boolean disponivel) {
+        Map<Long, Long> ativosPorLivro = emprestimoRepository.countAtivosPorLivro();
+
         return Optional.ofNullable(autor)
                 .map(String::trim)
                 .filter(Predicate.not(String::isEmpty))
                 .map(repository::findByAutor)
                 .orElseGet(repository::findAll)
                 .stream()
+                .map(livro -> LivroResponse.de(livro, calcularQuantidadeDisponivel(livro, ativosPorLivro)))
                 .filter(porDisponibilidade(disponivel))
-                .map(LivroResponse::de)
                 .toList();
     }
 
     public LivroResponse buscarPorId(Long id) {
-        return LivroResponse.de(buscarEntidadePorId(id));
+        return toResponse(buscarEntidadePorId(id));
     }
 
     public LivroResponse criar(LivroRequest request) {
         verificarIsbnExistente(request.isbn());
         LivroDomain livroSalvo = repository.save(request.toDomain());
-        return LivroResponse.de(livroSalvo);
+        return LivroResponse.de(livroSalvo, livroSalvo.getQuantidadeTotal());
     }
 
     public LivroResponse atualizar(Long id, LivroRequest request) {
@@ -55,7 +57,7 @@ public class LivroService {
         livro.setAnoPublicacao(request.anoPublicacao());
         livro.setQuantidadeTotal(request.quantidadeTotal());
 
-        return LivroResponse.de(repository.save(livro));
+        return toResponse(repository.save(livro));
     }
 
     public void remover(Long id) {
@@ -69,18 +71,22 @@ public class LivroService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Livro", id));
     }
 
-    private Predicate<LivroDomain> porDisponibilidade(Boolean disponivel) {
+    private LivroResponse toResponse(LivroDomain livro) {
+        int ativos = emprestimoRepository.countAtivosByLivroId(livro.getId()).intValue();
+        int disponivel = Math.max(0, livro.getQuantidadeTotal() - ativos);
+        return LivroResponse.de(livro, disponivel);
+    }
+
+    private int calcularQuantidadeDisponivel(LivroDomain livro, Map<Long, Long> ativosPorLivro) {
+        int ativos = ativosPorLivro.getOrDefault(livro.getId(), 0L).intValue();
+        return Math.max(0, livro.getQuantidadeTotal() - ativos);
+    }
+
+    private Predicate<LivroResponse> porDisponibilidade(Boolean disponivel) {
         if (disponivel == null) {
             return livro -> true;
         }
-
-        Map<Long, Long> ativosPorLivro = emprestimoRepository.countAtivosPorLivro();
-        return livro -> temExemplarDisponivel(livro, ativosPorLivro) == disponivel;
-    }
-
-    private boolean temExemplarDisponivel(LivroDomain livro, Map<Long, Long> ativosPorLivro) {
-        long emprestimosAtivos = ativosPorLivro.getOrDefault(livro.getId(), 0L);
-        return livro.getQuantidadeTotal() > emprestimosAtivos;
+        return livro -> (livro.quantidadeDisponivel() > 0) == disponivel;
     }
 
     private void validarAtualizacaoIsbn(String isbnAtual, String novoIsbn) {
