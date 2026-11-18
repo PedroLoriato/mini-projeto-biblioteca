@@ -7,10 +7,10 @@ body:
   type: json
   content: |-
     {
-      "titulo": "Clean Code",
-      "autor": "Pedro Loriato",
-      "isbn": "123456789012",
-      "anoPublicacao": 2025,
-      "quantidadeTotal": 60
+        "titulo": "Código Limpo",
+        "autor": "Robert C. Martin",
+        "isbn": "9788576082675",
+        "anoPublicacao": 2027,
+        "quantidadeTotal": 1
     }
 order: 5000
