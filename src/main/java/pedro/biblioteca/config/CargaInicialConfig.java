@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -29,51 +30,42 @@ public class CargaInicialConfig {
             Clock clock
     ) {
         return args -> {
-            LivroDomain livro1 = criarLivro(
-                    "Código Limpo",
-                    "Robert C. Martin",
-                    "9788576082675",
-                    2009,
-                    2
+            List<LivroDomain> livros = List.of(
+                    criarLivro(
+                            "Código Limpo",
+                            "Robert C. Martin",
+                            "9788576082675",
+                            2009,
+                            2
+                    ),
+                    criarLivro(
+                            "Arquitetura Limpa",
+                            "Robert C. Martin",
+                            "9788550804606",
+                            2019,
+                            1
+                    ),
+                    criarLivro(
+                            "Domain-Driven Design",
+                            "Eric Evans",
+                            "9788550800653",
+                            2016,
+                            3
+                    )
             );
-            LivroDomain livro2 = criarLivro(
-                    "Arquitetura Limpa",
-                    "Robert C. Martin",
-                    "9788550804606",
-                    2019,
-                    1
-            );
-            LivroDomain livro3 = criarLivro(
-                    "Domain-Driven Design",
-                    "Eric Evans",
-                    "9788550800653",
-                    2016,
-                    3
-            );
+            livros.forEach(livroRepository::save);
 
-            livroRepository.save(livro1);
-            livroRepository.save(livro2);
-            livroRepository.save(livro3);
-
-            LeitorDomain aluna = criarLeitor(
-                    "Ana Souza",
-                    "ana.souza@ifes.edu.br",
-                    TipoLeitor.ALUNO
+            List<LeitorDomain> leitores = List.of(
+                    criarLeitor("Ana Souza", "ana.souza@ifes.edu.br", TipoLeitor.ALUNO),
+                    criarLeitor("Carlos Mendes", "carlos.mendes@ifes.edu.br", TipoLeitor.PROFESSOR)
             );
-            LeitorDomain professor = criarLeitor(
-                    "Carlos Mendes",
-                    "carlos.mendes@ifes.edu.br",
-                    TipoLeitor.PROFESSOR
-            );
-
-            leitorRepository.save(aluna);
-            leitorRepository.save(professor);
+            leitores.forEach(leitorRepository::save);
 
             LocalDate hoje = LocalDate.now(clock);
 
             EmprestimoDomain emprestimoAtrasado = EmprestimoDomain.builder()
-                    .livroId(livro1.getId())
-                    .leitorId(aluna.getId())
+                    .livroId(livros.getFirst().getId())
+                    .leitorId(leitores.getFirst().getId())
                     .dataEmprestimo(hoje.minusDays(10))
                     .dataPrevistaDevolucao(hoje.minusDays(3))
                     .dataDevolucao(null)
@@ -83,26 +75,34 @@ public class CargaInicialConfig {
             emprestimoRepository.save(emprestimoAtrasado);
 
             log.info(
-                    "Carga inicial concluída: 3 livros, 2 leitores e 1 empréstimo atrasado (id={}).",
-                    emprestimoAtrasado.getId());
+                    "Carga inicial concluída: {} livros, {} leitores e 1 empréstimo atrasado.",
+                    livros.size(),
+                    leitores.size()
+            );
         };
     }
 
-    private LivroDomain criarLivro(String titulo, String autor, String isbn, int anoPublicacao, int quantidadeTotal) {
-        LivroDomain livro = new LivroDomain();
-        livro.setTitulo(titulo);
-        livro.setAutor(autor);
-        livro.setIsbn(isbn);
-        livro.setAnoPublicacao(anoPublicacao);
-        livro.setQuantidadeTotal(quantidadeTotal);
-        return livro;
+    private LivroDomain criarLivro(
+            String titulo,
+            String autor,
+            String isbn,
+            Integer anoPublicacao,
+            Integer quantidadeTotal
+    ) {
+        return LivroDomain.builder()
+                .titulo(titulo)
+                .autor(autor)
+                .isbn(isbn)
+                .anoPublicacao(anoPublicacao)
+                .quantidadeTotal(quantidadeTotal)
+                .build();
     }
 
     private LeitorDomain criarLeitor(String nome, String email, TipoLeitor tipo) {
-        LeitorDomain leitor = new LeitorDomain();
-        leitor.setNome(nome);
-        leitor.setEmail(email);
-        leitor.setTipo(tipo);
-        return leitor;
+        return LeitorDomain.builder()
+                .nome(nome)
+                .email(email)
+                .tipo(tipo)
+                .build();
     }
 }
