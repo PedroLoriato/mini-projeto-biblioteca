@@ -32,7 +32,11 @@ public class LivroService {
                 .map(repository::findByAutor)
                 .orElseGet(repository::findAll)
                 .stream()
-                .map(livro -> LivroResponse.de(livro, calcularQuantidadeDisponivel(livro, ativosPorLivro)))
+                .map(livro -> LivroResponse.de(
+                                livro,
+                                calcularQuantidadeDisponivel(livro, ativosPorLivro)
+                        )
+                )
                 .filter(porDisponibilidade(disponivel))
                 .toList();
     }
@@ -103,7 +107,11 @@ public class LivroService {
 
     private void verificarSemEmprestimosAtivos(Long livroId) {
         if (emprestimoRepository.countAtivosByLivroId(livroId) > 0) {
-            throw new ConflitoException("Não é possível remover o livro " + livroId + " pois possui empréstimos ativos.");
+            throw new ConflitoException(
+                    "Não é possível remover o livro " +
+                            livroId +
+                            " pois possui empréstimos ativos."
+            );
         }
     }
 }

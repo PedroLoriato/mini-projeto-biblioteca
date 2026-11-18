@@ -21,7 +21,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,7 +71,11 @@ public class EmprestimoService {
 
         long emprestimosAtivosLeitor = emprestimoRepository.countAtivosByLeitorId(leitor.getId());
         if (emprestimosAtivosLeitor >= politica.limiteEmprestimos()) {
-            throw new ConflitoException("O leitor atingiu o limite máximo de " + politica.limiteEmprestimos() + " empréstimos ativos.");
+            throw new ConflitoException(
+                    "O leitor atingiu o limite máximo de " +
+                            politica.limiteEmprestimos() +
+                            " empréstimos ativos."
+            );
         }
 
         EmprestimoDomain novoEmprestimo = EmprestimoDomain.builder()
@@ -87,8 +93,8 @@ public class EmprestimoService {
 
     public List<EmprestimoResponse> listar(Long leitorId, Boolean ativos) {
         List<EmprestimoDomain> filtrados = emprestimoRepository.findAll().stream()
-                .filter(e -> leitorId == null || e.getLeitorId().equals(leitorId))
-                .filter(e -> ativos == null || e.isAtivo() == ativos)
+                .filter(porLeitor(leitorId))
+                .filter(porStatusAtivo(ativos))
                 .toList();
 
         return toResponseList(filtrados);
@@ -126,6 +132,20 @@ public class EmprestimoService {
     public List<EmprestimoResponse> listarAtrasados() {
         LocalDate hoje = LocalDate.now(clock);
         return toResponseList(emprestimoRepository.findAtrasados(hoje));
+    }
+
+    private Predicate<EmprestimoDomain> porLeitor(Long leitorId) {
+        return Optional.ofNullable(leitorId)
+                .<Predicate<EmprestimoDomain>>map(id ->
+                        emprestimo -> emprestimo.getLeitorId().equals(id))
+                .orElse(emprestimo -> true);
+    }
+
+    private Predicate<EmprestimoDomain> porStatusAtivo(Boolean ativos) {
+        return Optional.ofNullable(ativos)
+                .<Predicate<EmprestimoDomain>>map(
+                        ativo -> emprestimo -> emprestimo.isAtivo() == ativo)
+                .orElse(emprestimo -> true);
     }
 
     private EmprestimoResponse toResponse(EmprestimoDomain emprestimo) {
