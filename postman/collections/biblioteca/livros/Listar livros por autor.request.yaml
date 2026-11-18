@@ -1,6 +1,6 @@
 $kind: http-request
-url: http://localhost:8080/livros?autor=peewdw
+url: http://localhost:8080/livros?autor=Robert
 method: GET
 queryParams:
-  autor: peewdw
+  autor: Robert
 order: 4000
