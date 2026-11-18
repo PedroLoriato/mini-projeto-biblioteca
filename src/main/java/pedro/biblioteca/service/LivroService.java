@@ -80,13 +80,13 @@ public class LivroService {
     }
 
     private LivroResponse toResponse(LivroDomain livro) {
-        int ativos = emprestimoRepository.countAtivosByLivroId(livro.getId()).intValue();
-        int disponivel = Math.max(0, livro.getQuantidadeTotal() - ativos);
+        Integer ativos = emprestimoRepository.countAtivosByLivroId(livro.getId()).intValue();
+        Integer disponivel = Math.max(0, livro.getQuantidadeTotal() - ativos);
         return LivroResponse.de(livro, disponivel);
     }
 
-    private int calcularQuantidadeDisponivel(LivroDomain livro, Map<Long, Long> ativosPorLivro) {
-        int ativos = ativosPorLivro.getOrDefault(livro.getId(), 0L).intValue();
+    private Integer calcularQuantidadeDisponivel(LivroDomain livro, Map<Long, Long> ativosPorLivro) {
+        Integer ativos = ativosPorLivro.getOrDefault(livro.getId(), 0L).intValue();
         return Math.max(0, livro.getQuantidadeTotal() - ativos);
     }
 
@@ -98,7 +98,7 @@ public class LivroService {
     }
 
     private void validarAnoPublicacao(Integer anoPublicacao) {
-        int anoAtual = LocalDate.now(clock).getYear();
+        Integer anoAtual = LocalDate.now(clock).getYear();
         if (anoPublicacao > anoAtual) {
             throw new NegocioException(
                     "O ano de publicação (" + anoPublicacao + ") não pode ser maior que o ano atual (" + anoAtual + ")."

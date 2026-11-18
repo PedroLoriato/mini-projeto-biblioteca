@@ -11,7 +11,7 @@ public record LivroResponse(
         Integer quantidadeTotal,
         Integer quantidadeDisponivel
 ) {
-    public static LivroResponse de(LivroDomain livro, int quantidadeDisponivel) {
+    public static LivroResponse de(LivroDomain livro, Integer quantidadeDisponivel) {
         return new LivroResponse(
                 livro.getId(),
                 livro.getTitulo(),

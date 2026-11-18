@@ -78,9 +78,7 @@ public class LeitorService {
     private void verificarSemEmprestimosAtivos(Long leitorId) {
         if (emprestimoRepository.countAtivosByLeitorId(leitorId) > 0) {
             throw new ConflitoException(
-                    "Não é possível remover o leitor " +
-                            leitorId +
-                            " pois possui empréstimos ativos."
+                    "Não é possível remover o leitor " + leitorId + " pois possui empréstimos ativos."
             );
         }
     }

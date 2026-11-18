@@ -14,18 +14,4 @@ public class LivroDomain {
     private String isbn;
     private Integer anoPublicacao;
     private Integer quantidadeTotal;
-
-    public LivroDomain(
-            String titulo,
-            String autor,
-            String isbn,
-            Integer anoPublicacao,
-            Integer quantidadeTotal
-    ) {
-        this.titulo = titulo;
-        this.autor = autor;
-        this.isbn = isbn;
-        this.anoPublicacao = anoPublicacao;
-        this.quantidadeTotal = quantidadeTotal;
-    }
 }
