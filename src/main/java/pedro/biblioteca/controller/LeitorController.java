@@ -1,5 +1,9 @@
 package pedro.biblioteca.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -13,16 +17,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/leitores")
+@RequiredArgsConstructor
 public class LeitorController {
 
     private final LeitorService service;
 
-    public LeitorController(LeitorService service) {
-        this.service = service;
-    }
-
     @PostMapping
-    public ResponseEntity<LeitorResponse> criar(@RequestBody LeitorRequest request) {
+    public ResponseEntity<LeitorResponse> criar(@Valid @RequestBody LeitorRequest request) {
         LeitorResponse criado = service.criar(request);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(criado.id()).toUri();
@@ -36,22 +37,20 @@ public class LeitorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LeitorResponse> buscar(@PathVariable Long id) {
-        return ResponseEntity.of(service.buscarPorId(id));
+    public LeitorResponse buscar(@PathVariable @Positive Long id) {
+        return service.buscarPorId(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LeitorResponse> atualizar(
-            @PathVariable Long id,
-            @RequestBody LeitorRequest request) {
-        return ResponseEntity.of(service.atualizar(id, request));
+    public LeitorResponse atualizar(
+            @PathVariable @Positive Long id,
+            @Valid @RequestBody LeitorRequest request) {
+        return service.atualizar(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
-        if (!service.remover(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable @Positive Long id) {
+        service.remover(id);
     }
 }

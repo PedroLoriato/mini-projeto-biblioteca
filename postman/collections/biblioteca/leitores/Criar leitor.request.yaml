@@ -1,15 +1,14 @@
 $kind: http-request
 url: http://localhost:8080/leitores
 method: POST
+headers:
+  Content-Type: application/json
 body:
   type: json
-  content: "{\r
-
-    \    \"nome\": \"Pedrin\",\r
-
-    \    \"email\": \"pedroloriato@gmail.com\",\r
-
-    \    \"tipo\": \"PROFESSOR\"\r
-
-    }"
+  content: |-
+    {
+      "nome": "Pedrin",
+      "email": "pedroloriato@gmail.com",
+      "tipo": "PROFESSOR"
+    }
 order: 1000

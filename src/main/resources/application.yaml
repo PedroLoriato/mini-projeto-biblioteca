@@ -1,3 +1,15 @@
 spring:
   application:
     name: biblioteca
+
+biblioteca:
+  emprestimo:
+    limite-ativos:
+      aluno: 3
+      professor: 5
+    prazo-dias:
+      aluno: 7
+      professor: 14
+    multa-diaria:
+      aluno: 1.00
+      professor: 0.50

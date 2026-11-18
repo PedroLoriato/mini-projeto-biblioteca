@@ -6,6 +6,8 @@ import pedro.biblioteca.domain.LeitorDomain;
 import pedro.biblioteca.domain.TipoLeitor;
 import pedro.biblioteca.dto.leitor.LeitorRequest;
 import pedro.biblioteca.dto.leitor.LeitorResponse;
+import pedro.biblioteca.exception.ConflitoException;
+import pedro.biblioteca.exception.RecursoNaoEncontradoException;
 import pedro.biblioteca.repository.LeitorRepository;
 
 import java.util.List;
@@ -27,9 +29,10 @@ public class LeitorService {
                 .toList();
     }
 
-    public Optional<LeitorResponse> buscarPorId(Long id) {
+    public LeitorResponse buscarPorId(Long id) {
         return repository.findById(id)
-                .map(LeitorResponse::de);
+                .map(LeitorResponse::de)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Leitor", id));
     }
 
     public LeitorResponse criar(LeitorRequest request) {
@@ -41,30 +44,31 @@ public class LeitorService {
         return LeitorResponse.de(leitorSalvo);
     }
 
-    public Optional<LeitorResponse> atualizar(Long id, LeitorRequest request) {
-        return repository.findById(id)
-                .map(leitor -> {
-                    if (!Objects.equals(leitor.getEmail(), request.email())) {
-                        verificarEmailExistente(request.email());
-                    }
-                    leitor.setNome(request.nome());
-                    leitor.setEmail(request.email());
-                    leitor.setTipo(request.tipo());
-                    return LeitorResponse.de(repository.save(leitor));
-                });
+    public LeitorResponse atualizar(Long id, LeitorRequest request) {
+        LeitorDomain leitor = repository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Leitor", id));
+
+        if (!Objects.equals(leitor.getEmail(), request.email())) {
+            verificarEmailExistente(request.email());
+        }
+
+        leitor.setNome(request.nome());
+        leitor.setEmail(request.email());
+        leitor.setTipo(request.tipo());
+
+        return LeitorResponse.de(repository.save(leitor));
     }
 
-    public boolean remover(Long id) {
+    public void remover(Long id) {
         if (!repository.existsById(id)) {
-            return false;
+            throw new RecursoNaoEncontradoException("Leitor", id);
         }
         repository.deleteById(id);
-        return true;
     }
 
     private void verificarEmailExistente(String email) {
         if (repository.existsByEmail(email)) {
-            throw new IllegalStateException("Já existe um leitor com esse e-mail: " + email);
+            throw new ConflitoException("Já existe um leitor cadastrado com o e-mail " + email);
         }
     }
 }

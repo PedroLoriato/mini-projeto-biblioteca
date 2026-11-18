@@ -1,6 +1,6 @@
 $kind: http-request
-url: http://localhost:8080/leitores?tipo=ALUNO
+url: http://localhost:8080/leitores?tipo=estudante
 method: GET
 queryParams:
-  tipo: ALUNO
-order: 2465
+  tipo: estudante
+order: 4000
